@@ -28,5 +28,20 @@ namespace WebApplicationDotNET_Task.Controllers
                 return BadRequest(ex);
             }
         }
+
+        [HttpPost]
+        [Route("response")]
+        public async Task<IActionResult> CreateResponse([FromBody] CandidateResponseModel candidateResponseModel)
+        {
+            try
+            {
+                await applicationService.CreateApplicationResponse(candidateResponseModel);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
     }
 }

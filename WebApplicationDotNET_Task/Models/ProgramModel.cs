@@ -15,6 +15,6 @@ namespace WebApplicationDotNET_Task.Models
         [JsonProperty("personalInformationQuestions")]
         public required List<QuestionModel> PersonalInformationQuestions { get; set; }
         [JsonProperty("additionalQuestions")]
-        public required List<QuestionModel> AdditionalQuestions { get; set; }
+        public List<QuestionModel>? AdditionalQuestions { get; set; }
     }
 }
