@@ -1,4 +1,5 @@
 ﻿using Microsoft.Azure.Cosmos;
+using System.ComponentModel;
 using WebApplicationDotNET_Task.Models;
 
 namespace WebApplicationDotNET_Task.Services
@@ -7,8 +8,8 @@ namespace WebApplicationDotNET_Task.Services
     {
         private readonly CosmosClient cosmosClient;
         private readonly IConfiguration configuration;
-        private readonly Container _programContainer;
-        private readonly Container _candidateResponseContainer;
+        private readonly Microsoft.Azure.Cosmos.Container _programContainer;
+        private readonly Microsoft.Azure.Cosmos.Container _candidateResponseContainer;
 
         public ApplicationService(CosmosClient cosmosClient, IConfiguration configuration)
         {
@@ -21,7 +22,7 @@ namespace WebApplicationDotNET_Task.Services
             _candidateResponseContainer = cosmosClient.GetContainer(databaseId, candidateResponseContainerName);
         }
 
-        public async Task CreateApplicationResponse(CandidateResponseModel candidateResponseModel)
+        public async Task CreateApplicationResponseAsync(CandidateResponseModel candidateResponseModel)
         {
             try
             {
@@ -33,11 +34,52 @@ namespace WebApplicationDotNET_Task.Services
             }
         }
 
-        public async Task CreatePogramApplication(ProgramModel program)
+        public async Task CreatePogramApplicationAsync(ProgramModel program)
         {
             try
             {
                 await _programContainer.CreateItemAsync(program);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task UpdateQuestionAsync(QuestionUpdateModel questionUpdateModel)
+        {
+            try
+            {
+                var response = await _programContainer.ReadItemAsync<dynamic>(questionUpdateModel.Id.ToString(), new PartitionKey(questionUpdateModel.ProgramId.ToString()));
+                dynamic document = response.Resource;
+
+                foreach (var question in questionUpdateModel.QuestionReigon == Enums.QuestionReigon.personalInfoQuestions ? document.personalInformationQuestions : document.additionalQuestions)
+                {
+                    if (question.questionId == questionUpdateModel.QuestionId)
+                    {
+                        if(questionUpdateModel.PropertyName == "questionTitle")
+                        {
+                            question.questionTitle = questionUpdateModel.NewValueString;
+                        }
+                        else if(questionUpdateModel.PropertyName == "mandatory")
+                        {
+                            question.mandatory = questionUpdateModel.NewValueBool;
+                        }
+                        else if(questionUpdateModel.PropertyName == "internal")
+                        {
+                            question.mandatory = questionUpdateModel.NewValueBool;
+                        }
+                        else if (questionUpdateModel.PropertyName == "hide")
+                        {
+                            question.mandatory = questionUpdateModel.NewValueBool;
+                        }
+                        else if(questionUpdateModel.PropertyName == "multipleChoiceOptions")
+                        {
+                            question.multipleChoiceOptions = questionUpdateModel.NewValueOptions;
+                        }
+                    }
+                }
+                await _programContainer.ReplaceItemAsync(document, document.id.ToString(), new PartitionKey(document.programId.ToString()));
             }
             catch
             {

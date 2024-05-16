@@ -4,7 +4,8 @@ namespace WebApplicationDotNET_Task.Services
 {
     public interface IApplicationService
     {
-        Task CreatePogramApplication(ProgramModel program);
-        Task CreateApplicationResponse(CandidateResponseModel candidateResponseModel);
+        Task CreatePogramApplicationAsync(ProgramModel program);
+        Task CreateApplicationResponseAsync(CandidateResponseModel candidateResponseModel);
+        Task UpdateQuestionAsync(QuestionUpdateModel questionUpdateModel);
     }
 }

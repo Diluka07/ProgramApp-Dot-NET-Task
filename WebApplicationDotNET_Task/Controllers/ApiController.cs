@@ -20,7 +20,7 @@ namespace WebApplicationDotNET_Task.Controllers
         {
             try
             {
-                await applicationService.CreatePogramApplication(program);
+                await applicationService.CreatePogramApplicationAsync(program);
                 return Ok();
             }
             catch (Exception ex)
@@ -35,7 +35,22 @@ namespace WebApplicationDotNET_Task.Controllers
         {
             try
             {
-                await applicationService.CreateApplicationResponse(candidateResponseModel);
+                await applicationService.CreateApplicationResponseAsync(candidateResponseModel);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpPut]
+        [Route("updatequestion")]
+        public async Task<IActionResult> UpdateQuestion([FromBody] QuestionUpdateModel questionUpdateModel)
+        {
+            try
+            {
+                await applicationService.UpdateQuestionAsync(questionUpdateModel);
                 return Ok();
             }
             catch (Exception ex)
