@@ -1,5 +1,6 @@
 ﻿using Microsoft.Azure.Cosmos;
 using System.ComponentModel;
+using WebApplicationDotNET_Task.Enums;
 using WebApplicationDotNET_Task.Models;
 
 namespace WebApplicationDotNET_Task.Services
@@ -39,6 +40,30 @@ namespace WebApplicationDotNET_Task.Services
             try
             {
                 await _programContainer.CreateItemAsync(program);
+            }
+            catch
+            {
+                throw;
+            }
+        }
+
+        public async Task<List<QuestionModel>> GetQuestionByQuestionType(string programId, QuestionType questionType)
+        {
+            try
+            {
+                var additionalQuestionsQuery = _programContainer.GetItemQueryIterator<QuestionModel>(
+                    new QueryDefinition("SELECT q.questionId, q.questionTitle, q.questionType, q.mandatory, q.internalQ, q.hide, q.multipleChoiceOptions FROM c JOIN q IN c.additionalQuestions WHERE c.programId = @programId AND q.questionType = @questionType")
+                        .WithParameter("@programId", programId)
+                        .WithParameter("@questionType", questionType));
+
+                var additionalQuestionsWithType = new List<QuestionModel>();
+                while (additionalQuestionsQuery.HasMoreResults)
+                {
+                    var response = await additionalQuestionsQuery.ReadNextAsync();
+                    additionalQuestionsWithType.AddRange(response.ToList());
+                }
+
+                return additionalQuestionsWithType;
             }
             catch
             {

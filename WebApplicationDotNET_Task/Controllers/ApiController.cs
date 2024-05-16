@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using WebApplicationDotNET_Task.Enums;
 using WebApplicationDotNET_Task.Models;
 using WebApplicationDotNET_Task.Services;
 
@@ -52,6 +53,21 @@ namespace WebApplicationDotNET_Task.Controllers
             {
                 await applicationService.UpdateQuestionAsync(questionUpdateModel);
                 return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex);
+            }
+        }
+
+        [HttpGet]
+        [Route("questionbytype")]
+        public async Task<IActionResult> GetQuestionsByType([FromQuery] string programId, QuestionType questionType)
+        {
+            try
+            {
+                var res = await applicationService.GetQuestionByQuestionType(programId, questionType);
+                return Ok(res);
             }
             catch (Exception ex)
             {
